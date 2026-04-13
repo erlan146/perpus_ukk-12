@@ -17,12 +17,15 @@ class Anggota extends CI_Controller {
     }
 
     // ================== LIST
-    public function index()
-    {
-        $data['anggota'] = $this->db->get('users')->result();
-        $this->load->view('anggota/index', $data);
-    }
+        public function index()
+        {
+            $data['anggota'] = $this->db
+                ->where('role !=', 'admin')
+                ->get('users')
+                ->result();
 
+            $this->load->view('anggota/index', $data);
+        }
     // ================== TAMBAH
     public function tambah()
     {

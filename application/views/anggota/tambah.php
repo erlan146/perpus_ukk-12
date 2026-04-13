@@ -14,28 +14,27 @@
     body {
         margin: 0;
         font-family: 'Segoe UI', sans-serif;
-        background: radial-gradient(circle at top, #1e293b, #020617);
+        background: #f1f5f9;
     }
 
     .wrapper {
         width: 380px;
-        animation: fadeIn 0.6s ease;
+        animation: fadeIn 0.5s ease;
     }
 
     .header {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
+        background: #1e293b;
         color: white;
-        padding: 20px;
-        border-radius: 20px 20px 0 0;
+        padding: 18px;
+        border-radius: 16px 16px 0 0;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     }
 
     .card-box {
         background: white;
         padding: 25px;
-        border-radius: 0 0 20px 20px;
-        box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+        border-radius: 0 0 16px 16px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
     }
 
     /* INPUT */
@@ -48,20 +47,21 @@
         position: absolute;
         left: 12px;
         top: 12px;
-        color: #94a3b8;
+        color: #64748b;
     }
 
     .input-box input {
         width: 100%;
         padding: 12px 12px 12px 38px;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
         outline: none;
+        background: #f8fafc;
     }
 
     .input-box input:focus {
-        border-color: #22c55e;
-        box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+        border-color: #334155;
+        background: #fff;
     }
 
     .input-box label {
@@ -69,7 +69,7 @@
         left: 38px;
         top: 12px;
         font-size: 13px;
-        color: #94a3b8;
+        color: #64748b;
         transition: 0.2s;
     }
 
@@ -79,43 +79,43 @@
         background: white;
         padding: 0 6px;
         font-size: 11px;
-        color: #22c55e;
+        color: #334155;
     }
 
     /* SELECT */
     .modern-select {
         width: 100%;
         padding: 12px;
-        border-radius: 12px;
-        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
         margin-bottom: 15px;
+        background: #f8fafc;
     }
 
     .modern-select:focus {
-        border-color: #22c55e;
-        box-shadow: 0 0 0 3px rgba(34,197,94,0.2);
+        border-color: #334155;
+        background: #fff;
     }
 
     .label-title {
         font-size: 13px;
-        color: #64748b;
+        color: #475569;
         margin-bottom: 5px;
     }
 
     /* BUTTON */
     .btn-modern {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
+        background: #1e293b;
         border: none;
         padding: 12px;
-        border-radius: 12px;
+        border-radius: 10px;
         color: white;
-        font-weight: bold;
-        transition: 0.3s;
+        font-weight: 500;
+        transition: 0.2s;
     }
 
     .btn-modern:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(34,197,94,0.4);
+        background: #0f172a;
     }
 
     /* BACK */
@@ -123,21 +123,21 @@
         display: block;
         text-align: center;
         padding: 12px;
-        border-radius: 12px;
-        background: #f1f5f9;
+        border-radius: 10px;
+        background: #e2e8f0;
         color: #334155;
         text-decoration: none;
         margin-top: 10px;
     }
 
     .btn-back:hover {
-        background: #e2e8f0;
+        background: #cbd5e1;
     }
 
     @keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(10px);
         }
         to {
             opacity: 1;
@@ -155,8 +155,8 @@
 
         <!-- HEADER -->
         <div class="header">
-            <h4 class="fw-bold mb-1">Tambah Anggota</h4>
-            <small>Tambahkan pengguna baru</small>
+            <h5 class="fw-semibold mb-1">Tambah Anggota</h5>
+            <small class="text-light opacity-75">Form pengguna baru</small>
         </div>
 
         <!-- CARD -->
@@ -196,7 +196,7 @@
                 </select>
 
                 <!-- BUTTON -->
-                <button class="btn-modern w-100">➕ Tambah Anggota</button>
+                <button class="btn-modern w-100">Tambah Anggota</button>
 
                 <a href="<?= site_url('anggota') ?>" class="btn-back w-100">Kembali</a>
 

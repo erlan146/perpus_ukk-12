@@ -21,39 +21,11 @@
             border-radius: 16px;
             padding: 25px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.05);
-            animation: fadeIn 0.4s ease;
-        }
-
-        table {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        thead {
-            background: #f1f3f5;
-            color: #333;
-        }
-
-        tbody tr {
-            transition: 0.2s;
-        }
-
-        tbody tr:hover {
-            background: #f9fafb;
-        }
-
-        td, th {
-            vertical-align: middle !important;
         }
 
         .btn-modern {
             border-radius: 10px;
-            padding: 5px 10px;
             font-size: 13px;
-        }
-
-        .btn-modern:hover {
-            transform: translateY(-1px);
         }
 
         .badge-soft-success {
@@ -72,13 +44,8 @@
             font-size: 12px;
         }
 
-        .title {
-            font-weight: 600;
-        }
-
-        @keyframes fadeIn {
-            from {opacity:0; transform: translateY(10px);}
-            to {opacity:1; transform: translateY(0);}
+        tbody tr:hover {
+            background: #f9fafb;
         }
     </style>
 </head>
@@ -86,26 +53,56 @@
 <body>
 
 <div class="container py-5">
-
 <div class="card-main">
 
 <!-- HEADER -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h5 class="title mb-1">Kelola Anggota</h5>
-        <small class="text-muted">Manajemen data user</small>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="fw-bold">Kelola Anggota</h5>
+
+    <div class="d-flex gap-2">
+          <!-- BACK KE DASHBOARD ADMIN -->
+        <a href="<?= site_url('dashboard/admin') ?>" class="btn btn-secondary btn-modern">
+            <i class="bi bi-arrow-left"></i> Dashboard
+        </a>
+
+        <!-- Tombol Tambah -->
+        <a href="<?= site_url('anggota/tambah') ?>" class="btn btn-dark btn-modern">
+            + Tambah
+        </a>
+    </div>
+</div>
+
+<!-- FILTER -->
+<div class="row mb-3 g-2">
+
+    <div class="col-md-4">
+        <input type="text" id="search" class="form-control" placeholder="Cari username...">
     </div>
 
-    <a href="<?= site_url('anggota/tambah') ?>" class="btn btn-dark btn-modern">
-        + Tambah
-    </a>
+    <div class="col-md-3">
+        <select id="filterStatus" class="form-select">
+            <option value="">Semua Status</option>
+            <option value="aktif">Aktif</option>
+            <option value="blacklist">Blacklist</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select id="filterKelas" class="form-select">
+            <option value="">Semua Kelas</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+        </select>
+    </div>
+
 </div>
 
 <!-- TABLE -->
 <div class="table-responsive">
 <table class="table align-middle">
 
-<thead>
+<thead class="text-muted">
 <tr>
 <th>No</th>
 <th>Username</th>
@@ -116,15 +113,18 @@
 </tr>
 </thead>
 
-<tbody>
+<tbody id="tableBody">
 
 <?php $no=1; foreach($anggota as $a): 
 $status = isset($a->status) ? $a->status : 'aktif';
 ?>
 
-<tr>
-<td><?= $no++ ?></td>
+<tr class="data-row"
+    data-username="<?= strtolower($a->username) ?>"
+    data-status="<?= $status ?>"
+    data-kelas="<?= $a->kelas ?>">
 
+<td><?= $no++ ?></td>
 <td class="fw-semibold"><?= $a->username ?></td>
 <td><?= $a->kelas ?? '-' ?></td>
 <td><?= $a->jurusan ?? '-' ?></td>
@@ -138,7 +138,6 @@ $status = isset($a->status) ? $a->status : 'aktif';
 </td>
 
 <td>
-
 <a href="<?= site_url('anggota/edit/'.$a->id) ?>" 
 class="btn btn-outline-dark btn-sm btn-modern">
 <i class="bi bi-pencil"></i>
@@ -161,7 +160,6 @@ class="btn btn-outline-dark btn-sm btn-modern">
 <i class="bi bi-check-circle"></i>
 </a>
 <?php endif; ?>
-
 </td>
 
 </tr>
@@ -172,16 +170,40 @@ class="btn btn-outline-dark btn-sm btn-modern">
 </table>
 </div>
 
-<!-- BACK -->
-<div class="mt-4 text-end">
-<a href="<?= site_url('dashboard/admin') ?>" class="btn btn-outline-dark btn-modern">
-← Kembali
-</a>
+</div>
 </div>
 
-</div>
+<!-- SCRIPT FILTER -->
+<script>
+const search = document.getElementById('search');
+const status = document.getElementById('filterStatus');
+const kelas = document.getElementById('filterKelas');
 
-</div>
+function filterData() {
+    let keyword = search.value.toLowerCase();
+    let s = status.value;
+    let k = kelas.value;
+
+    document.querySelectorAll('.data-row').forEach(row => {
+
+        let username = row.dataset.username;
+        let stat = row.dataset.status;
+        let kel = row.dataset.kelas;
+
+        let show = true;
+
+        if (keyword && !username.includes(keyword)) show = false;
+        if (s && stat !== s) show = false;
+        if (k && kel !== k) show = false;
+
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+search.addEventListener('keyup', filterData);
+status.addEventListener('change', filterData);
+kelas.addEventListener('change', filterData);
+</script>
 
 </body>
 </html>

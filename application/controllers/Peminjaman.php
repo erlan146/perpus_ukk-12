@@ -17,9 +17,9 @@ class Peminjaman extends CI_Controller {
     // ===============================
     public function index()
     {
-        $this->db->select('p.*, b.judul');
+        $this->db->select('p.*, b.judul, b.penulis, b.tahun'); // 🔥 tambah tahun
         $this->db->from('peminjaman p');
-        $this->db->join('buku b', 'b.id = p.id_buku');
+        $this->db->join('buku b', 'b.id = p.id_buku', 'left');
 
         if ($this->session->userdata('role') != 'admin') {
             $this->db->where('p.nama_peminjam', $this->session->userdata('username'));
@@ -31,39 +31,74 @@ class Peminjaman extends CI_Controller {
     }
 
     // ===============================
+    // DETAIL
+    // ===============================
+    public function detail($id)
+{
+    $this->db->select('p.*, b.judul, b.penulis, b.tahun, u.kelas, u.jurusan');
+    $this->db->from('peminjaman p');
+    $this->db->join('buku b', 'b.id = p.id_buku', 'left');
+
+    // 🔥 ganti sesuai nama tabel user lo
+    $this->db->join('users u', 'u.username = p.nama_peminjam', 'left');
+
+    $this->db->where('p.id', $id);
+
+    $data['p'] = $this->db->get()->row();
+
+    if (!$data['p']) {
+        show_404();
+    }
+
+    $this->load->view('peminjaman/peminjaman_detail', $data);
+}
+    // ===============================
     // PINJAM
     // ===============================
     public function pinjam($id_buku)
     {
-        $buku = $this->db->get_where('buku', ['id'=>$id_buku])->row();
+        $username = $this->session->userdata('username');
 
-        if (!$buku || $buku->stok <= 0) {
-            echo "Buku tidak tersedia!";
+        $this->db->where('id_buku', $id_buku);
+        $this->db->where('nama_peminjam', $username);
+        $this->db->where('status', 'dipinjam');
+        $cek = $this->db->get('peminjaman')->row();
+
+        if ($cek) {
+            echo "<script>alert('Kamu masih meminjam buku ini!'); window.location='".site_url('buku')."';</script>";
             return;
         }
 
-        $data = [
+        $buku = $this->db->get_where('buku', ['id'=>$id_buku])->row();
+
+        if (!$buku || $buku->stok <= 0) {
+            echo "<script>alert('Stok buku habis!'); window.location='".site_url('buku')."';</script>";
+            return;
+        }
+
+        $this->db->insert('peminjaman', [
             'id_buku'        => $id_buku,
-            'nama_peminjam'  => $this->session->userdata('username'),
+            'nama_peminjam'  => $username,
             'tanggal_pinjam' => date('Y-m-d'),
             'tanggal_kembali'=> date('Y-m-d', strtotime('+7 days')),
             'status'         => 'dipinjam',
             'denda'          => 0,
             'status_bayar'   => 'belum'
-        ];
+        ]);
 
-        $this->db->insert('peminjaman', $data);
-
-        // kurangi stok
         $this->db->set('stok', 'stok-1', FALSE);
         $this->db->where('id', $id_buku);
         $this->db->update('buku');
 
-        redirect('dashboard/user');
+        if ($this->session->userdata('role') == 'admin') {
+            redirect('dashboard/admin');
+        } else {
+            redirect('dashboard/user');
+        }
     }
 
     // ===============================
-    // KEMBALIKAN BUKU
+    // KEMBALIKAN
     // ===============================
     public function kembali($id, $id_buku)
     {
@@ -83,14 +118,12 @@ class Peminjaman extends CI_Controller {
             $denda = $selisih * 1000;
         }
 
-        // update peminjaman
         $this->db->where('id', $id);
         $this->db->update('peminjaman', [
             'status' => 'kembali',
             'denda'  => $denda
         ]);
 
-        // tambah stok kembali
         $this->db->set('stok', 'stok+1', FALSE);
         $this->db->where('id', $id_buku);
         $this->db->update('buku');
@@ -121,9 +154,9 @@ class Peminjaman extends CI_Controller {
     // ===============================
     public function transaksi_user()
     {
-        $this->db->select('p.*, b.judul');
+        $this->db->select('p.*, b.judul, b.penulis, b.tahun'); // 🔥 tambah tahun
         $this->db->from('peminjaman p');
-        $this->db->join('buku b','b.id = p.id_buku');
+        $this->db->join('buku b','b.id = p.id_buku','left');
         $this->db->where('p.nama_peminjam', $this->session->userdata('username'));
 
         $data['trx'] = $this->db->get()->result();

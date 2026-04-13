@@ -78,12 +78,12 @@
         <i class="bi bi-book"></i> Buku
     </a>
 
-    <a href="<?= site_url('peminjaman') ?>" class="menu-item">
-        <i class="bi bi-journal"></i> Kelola Peminjaman
+        <a href="<?= site_url('anggota') ?>" class="menu-item">
+        <i class="bi bi-people"></i> Anggota
     </a>
 
-    <a href="<?= site_url('anggota') ?>" class="menu-item">
-        <i class="bi bi-people"></i> Anggota
+    <a href="<?= site_url('peminjaman') ?>" class="menu-item">
+        <i class="bi bi-journal"></i> Kelola Peminjaman
     </a>
 
     <a href="<?= site_url('auth/logout') ?>" class="menu-item text-danger">

@@ -62,6 +62,11 @@
       border-radius: 8px;
     }
 
+    .badge-danger {
+      background: #f8d7da;
+      color: #842029;
+    }
+
     .btn-pinjam {
       margin-top: 10px;
       border-radius: 8px;
@@ -109,15 +114,6 @@
       </div>
     </div>
 
-    <div class="col-md-3">
-      <div class="stat-card">
-        <small class="text-muted">Buku Tersedia</small>
-        <h5 class="fw-bold">
-          <?= $this->db->where('status','tersedia')->count_all_results('buku') ?>
-        </h5>
-      </div>
-    </div>
-
   </div>
 
   <!-- MENU -->
@@ -137,31 +133,6 @@
     </div>
   </div>
 
-  <!-- INFO BUKU DIPINJAM -->
-  <div class="card-main">
-
-    <small class="text-muted">Sedang dipinjam</small>
-
-    <?php
-    $this->db->select('p.*, b.judul');
-    $this->db->from('peminjaman p');
-    $this->db->join('buku b','b.id=p.id_buku');
-    $this->db->where('p.nama_peminjam', $this->session->userdata('username'));
-    $this->db->where('p.status','dipinjam');
-    $aktif = $this->db->get()->row();
-    ?>
-
-    <?php if($aktif): ?>
-      <div class="fw-semibold"><?= $aktif->judul ?></div>
-      <small class="text-danger">
-        Jatuh tempo: <?= $aktif->tanggal_kembali ?>
-      </small>
-    <?php else: ?>
-      <div class="text-muted">Tidak ada buku dipinjam</div>
-    <?php endif; ?>
-
-  </div>
-
   <!-- LIST BUKU -->
   <div class="card-main">
 
@@ -175,6 +146,12 @@
       <?php
       $buku = $this->db->get('buku')->result();
       foreach($buku as $b):
+
+      // 🔥 CEK BUKU SEDANG DIPINJAM
+      $cekDipinjam = $this->db->where('id_buku', $b->id)
+                              ->where('status', 'dipinjam')
+                              ->get('peminjaman')
+                              ->row();
       ?>
 
       <div class="col-md-3 item-buku">
@@ -186,20 +163,26 @@
 
             <div class="mt-2">
               <span class="badge-soft"><?= $b->tahun ?></span>
-              <span class="badge-soft"><?= $b->status ?></span>
+
+              <?php if($cekDipinjam): ?>
+                <span class="badge-soft badge-danger">Sedang Dipinjam</span>
+              <?php else: ?>
+                <span class="badge-soft">Tersedia</span>
+              <?php endif; ?>
+
               <span class="badge-soft">Stok: <?= $b->stok ?></span>
             </div>
           </div>
 
-          <!-- TOMBOL PINJAM -->
-          <?php if($b->status == 'tersedia'): ?>
-          <a href="<?= site_url('peminjaman/pinjam/'.$b->id) ?>" 
-   class="btn btn-dark btn-sm btn-pinjam w-100">
-   Pinjam
-</a>
+          <!-- BUTTON -->
+          <?php if(!$cekDipinjam && $b->stok > 0): ?>
+            <a href="<?= site_url('peminjaman/pinjam/'.$b->id) ?>" 
+               class="btn btn-dark btn-sm btn-pinjam w-100">
+               Pinjam
+            </a>
           <?php else: ?>
             <button class="btn btn-outline-secondary btn-sm btn-pinjam w-100" disabled>
-              Tidak tersedia
+              Sedang Dipinjam
             </button>
           <?php endif; ?>
 
