@@ -8,9 +8,36 @@
 
     <style>
         body { background: #f6f7f9; font-family: 'Segoe UI'; }
-        .card-main { background:#fff; border-radius:14px; padding:20px; box-shadow:0 6px 20px rgba(0,0,0,0.05); }
-        .badge-soft-success { background:#d1e7dd; color:#0f5132; padding:5px 10px; border-radius:10px; font-size:12px; }
-        .badge-soft-danger { background:#f8d7da; color:#842029; padding:5px 10px; border-radius:10px; font-size:12px; }
+
+        .card-main {
+            background:#fff;
+            border-radius:14px;
+            padding:20px;
+            box-shadow:0 6px 20px rgba(0,0,0,0.05);
+        }
+
+        .badge-soft-success {
+            background:#d1e7dd;
+            color:#0f5132;
+            padding:5px 10px;
+            border-radius:10px;
+            font-size:12px;
+        }
+
+        .badge-soft-danger {
+            background:#f8d7da;
+            color:#842029;
+            padding:5px 10px;
+            border-radius:10px;
+            font-size:12px;
+        }
+
+        .cover-img {
+            width:60px;
+            height:80px;
+            object-fit:cover;
+            border-radius:6px;
+        }
     </style>
 </head>
 
@@ -21,13 +48,15 @@
 
 <div class="d-flex justify-content-between mb-3">
     <h5>Data Buku</h5>
-    <a href="<?= site_url('buku/tambah') ?>" class="btn btn-dark btn-sm">+ Tambah</a>
+    <a href="<?= base_url('index.php/buku/tambah') ?>" class="btn btn-dark btn-sm">+ Tambah</a>
 </div>
 
-<table class="table">
+<div class="table-responsive">
+<table class="table align-middle">
 <thead>
 <tr>
 <th>No</th>
+<th>Cover</th>
 <th>Judul</th>
 <th>Penulis</th>
 <th>Tahun</th>
@@ -41,6 +70,11 @@
 <?php $no=1; foreach($buku as $b): ?>
 <tr>
 <td><?= $no++ ?></td>
+
+<td>
+<img src="<?= base_url('assets/cover/'.(!empty($b->cover)?$b->cover:'default.jpg')) ?>" class="cover-img">
+</td>
+
 <td><?= $b->judul ?></td>
 <td><?= $b->penulis ?></td>
 <td><?= $b->tahun ?></td>
@@ -55,16 +89,28 @@
 </td>
 
 <td>
-<a href="<?= site_url('buku/edit/'.$b->id) ?>" class="btn btn-sm btn-outline-dark">Edit</a>
-<a href="<?= site_url('buku/hapus/'.$b->id) ?>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Yakin?')">Hapus</a>
+<a href="<?= base_url('index.php/buku/edit/'.$b->id) ?>" 
+   class="btn btn-sm btn-outline-dark">
+   Edit
+</a>
+
+<a href="<?= base_url('index.php/buku/hapus/'.$b->id) ?>" 
+   class="btn btn-sm btn-outline-danger"
+   onclick="return confirm('Yakin hapus buku ini?')">
+   Hapus
+</a>
 </td>
+
 </tr>
 <?php endforeach; ?>
 </tbody>
 
 </table>
+</div>
 
-<a href="<?= site_url('dashboard/admin') ?>" class="btn btn-outline-dark btn-sm">← Dashboard</a>
+<a href="<?= base_url('index.php/dashboard/admin') ?>" class="btn btn-outline-dark btn-sm mt-2">
+    ← Dashboard
+</a>
 
 </div>
 </div>

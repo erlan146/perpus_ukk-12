@@ -53,7 +53,8 @@ body {
         <small class="text-muted">Masukkan data buku</small>
     </div>
 
-    <form method="post">
+    <!-- 🔥 TAMBAH enctype -->
+    <form method="post" enctype="multipart/form-data">
 
         <!-- Judul -->
         <div class="mb-3">
@@ -79,6 +80,17 @@ body {
             <input type="number" name="stok" class="form-control" placeholder="Jumlah stok" required>
         </div>
 
+        <!-- 🔥 TAMBAHAN COVER -->
+        <div class="mb-3">
+            <label class="form-label">Cover Buku</label>
+            <input type="file" name="cover" class="form-control" onchange="previewImg(event)">
+        </div>
+
+        <!-- PREVIEW -->
+        <div class="mb-3 text-center">
+            <img id="preview" src="<?= base_url('assets/cover/default.jpg') ?>" width="120" style="border-radius:8px;">
+        </div>
+
         <!-- Button -->
         <button class="btn btn-dark w-100">
             Simpan
@@ -94,6 +106,16 @@ body {
     </div>
 
 </div>
+
+<script>
+function previewImg(e){
+  let reader = new FileReader();
+  reader.onload = function(){
+    document.getElementById('preview').src = reader.result;
+  }
+  reader.readAsDataURL(e.target.files[0]);
+}
+</script>
 
 </body>
 </html>

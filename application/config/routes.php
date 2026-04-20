@@ -93,3 +93,5 @@ $route['buku/hapus/(:num)'] = 'buku/hapus/$1';
 ====================== */
 $route['dashboard/admin'] = 'dashboard/admin';
 $route['dashboard/user']  = 'dashboard/user';
+
+$route['dashboard/cetak_kartu/(:num)'] = 'dashboard/cetak_kartu/$1';

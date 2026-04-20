@@ -10,6 +10,9 @@ class Buku extends CI_Controller {
         if (!$this->session->userdata('login')) {
             redirect('auth');
         }
+
+        $this->load->database();
+        $this->load->library('upload');
     }
 
     // ==========================
@@ -33,13 +36,30 @@ class Buku extends CI_Controller {
         if ($this->input->post()) {
 
             $stok = $this->input->post('stok');
+            $cover = 'default.jpg'; // default
+
+            // 🔥 FIX UPLOAD
+            if (isset($_FILES['cover']) && $_FILES['cover']['name'] != '') {
+
+                $config['upload_path']   = FCPATH . 'assets/cover/'; // 🔥 WAJIB
+                $config['allowed_types'] = 'jpg|jpeg|png|webp';
+                $config['max_size']      = 2048;
+                $config['file_name']     = time();
+
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload('cover')) {
+                    $cover = $this->upload->data('file_name');
+                }
+            }
 
             $data = [
                 'judul'   => $this->input->post('judul'),
-                'penulis' => $this->input->post('penulis'), // ✅ FIX
-                'tahun'   => $this->input->post('tahun'),   // ✅ TAMBAH
+                'penulis' => $this->input->post('penulis'),
+                'tahun'   => $this->input->post('tahun'),
                 'stok'    => $stok,
-                'status'  => ($stok > 0) ? 'tersedia' : 'habis'
+                'status'  => ($stok > 0) ? 'tersedia' : 'habis',
+                'cover'   => $cover
             ];
 
             $this->db->insert('buku', $data);
@@ -58,16 +78,40 @@ class Buku extends CI_Controller {
             redirect('buku');
         }
 
+        $buku = $this->db->get_where('buku', ['id' => $id])->row();
+
         if ($this->input->post()) {
 
             $stok = $this->input->post('stok');
+            $cover = !empty($buku->cover) ? $buku->cover : 'default.jpg';
+
+            if (isset($_FILES['cover']) && $_FILES['cover']['name'] != '') {
+
+                $config['upload_path']   = FCPATH . 'assets/cover/';
+                $config['allowed_types'] = 'jpg|jpeg|png|webp';
+                $config['max_size']      = 2048;
+                $config['file_name']     = time();
+
+                $this->upload->initialize($config);
+
+                if ($this->upload->do_upload('cover')) {
+
+                    // hapus lama
+                    if ($cover != 'default.jpg' && file_exists(FCPATH.'assets/cover/'.$cover)) {
+                        unlink(FCPATH.'assets/cover/'.$cover);
+                    }
+
+                    $cover = $this->upload->data('file_name');
+                }
+            }
 
             $data = [
                 'judul'   => $this->input->post('judul'),
-                'penulis' => $this->input->post('penulis'), // ✅ TAMBAH
-                'tahun'   => $this->input->post('tahun'),   // ✅ TAMBAH
+                'penulis' => $this->input->post('penulis'),
+                'tahun'   => $this->input->post('tahun'),
                 'stok'    => $stok,
-                'status'  => ($stok > 0) ? 'tersedia' : 'habis'
+                'status'  => ($stok > 0) ? 'tersedia' : 'habis',
+                'cover'   => $cover
             ];
 
             $this->db->where('id', $id);
@@ -76,7 +120,7 @@ class Buku extends CI_Controller {
             redirect('buku');
         }
 
-        $data['buku'] = $this->db->get_where('buku', ['id' => $id])->row();
+        $data['buku'] = $buku;
         $this->load->view('buku/edit', $data);
     }
 
@@ -87,6 +131,12 @@ class Buku extends CI_Controller {
     {
         if ($this->session->userdata('role') != 'admin') {
             redirect('buku');
+        }
+
+        $buku = $this->db->get_where('buku', ['id' => $id])->row();
+
+        if ($buku && $buku->cover != 'default.jpg') {
+            @unlink(FCPATH.'assets/cover/'.$buku->cover);
         }
 
         $this->db->delete('buku', ['id' => $id]);

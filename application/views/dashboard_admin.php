@@ -1,106 +1,218 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Panel</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard Admin</title>
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Icon -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f5f7fa;
-        }
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/highcharts-3d.js"></script>
 
-        .sidebar {
-            width: 230px;
-            height: 100vh;
-            background: white;
-            position: fixed;
-            left: 0;
-            top: 0;
-            border-right: 1px solid #eee;
-            padding: 20px;
-        }
+<style>
 
-        .sidebar h5 {
-            font-weight: bold;
-            margin-bottom: 30px;
-        }
+body{
+    background:#f1f5f9;
+    font-family:'Segoe UI', sans-serif;
+}
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            color: #333;
-            text-decoration: none;
-            transition: 0.2s;
-        }
+.sidebar{
+    width:240px;
+    height:100vh;
+    position:fixed;
+    background:#fff;
+    padding:20px;
+    border-right:1px solid #e5e7eb;
+}
 
-        .menu-item:hover {
-            background: #f1f3f5;
-        }
+.sidebar h4{font-weight:700}
 
-        .menu-item i {
-            margin-right: 10px;
-            font-size: 18px;
-        }
+.menu{
+    display:block;
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:10px;
+    text-decoration:none;
+    color:#374151;
+}
 
-        .content {
-            margin-left: 230px;
-            padding: 30px;
-        }
+.menu:hover{
+    background:#f3f4f6;
+}
 
-        .card-box {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-    </style>
+.content{
+    margin-left:240px;
+    padding:30px;
+}
+
+.card-clean{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.06);
+}
+
+.stat{
+    font-size:28px;
+    font-weight:bold;
+}
+
+</style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
+    <h4>📊 Admin</h4>
 
-    <h5>📚 Admin</h5>
-
-    <a href="<?= site_url('buku') ?>" class="menu-item">
-        <i class="bi bi-book"></i> Buku
-    </a>
-
-        <a href="<?= site_url('anggota') ?>" class="menu-item">
-        <i class="bi bi-people"></i> Anggota
-    </a>
-
-    <a href="<?= site_url('peminjaman') ?>" class="menu-item">
-        <i class="bi bi-journal"></i> Kelola Peminjaman
-    </a>
-
-    <a href="<?= site_url('auth/logout') ?>" class="menu-item text-danger">
-        <i class="bi bi-box-arrow-right"></i> Logout
-    </a>
-
+    <a href="<?= site_url('dashboard/admin') ?>" class="menu">🏠 Dashboard</a>
+    <a href="<?= site_url('buku') ?>" class="menu">📚 Buku</a>
+    <a href="<?= site_url('anggota') ?>" class="menu">👤 Anggota</a>
+    <a href="<?= site_url('peminjaman') ?>" class="menu">📖 Peminjaman</a>
+    <a href="<?= site_url('auth/logout') ?>" class="menu">🚪 Logout</a>
 </div>
 
-<!-- CONTENT -->
 <div class="content">
 
-    <div class="card-box">
-        <h5>Pilih menu di sebelah kiri</h5>
-        <p class="text-muted">Silakan kelola data buku, peminjaman, atau anggota.</p>
+<h3 class="mb-4">Dashboard Overview 📊</h3>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <div class="card-clean">
+            <small>Total User</small>
+            <div class="stat text-primary"><?= $total_user ?></div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card-clean">
+            <small>Total Peminjaman</small>
+            <div class="stat text-success"><?= $total_peminjaman ?></div>
+        </div>
     </div>
 
 </div>
+
+<div class="row g-3">
+
+    <div class="col-md-6">
+        <div class="card-clean">
+            <h6>User Per Bulan</h6>
+            <div id="userChart" style="height:360px;"></div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card-clean">
+            <h6>Peminjaman Per Bulan</h6>
+            <div id="pinjamChart" style="height:360px;"></div>
+        </div>
+    </div>
+
+</div>
+
+</div>
+
+<script>
+
+let bulan = <?= $bulan ?>;
+let userData = <?= $user_chart ?>;
+let pinjamData = <?= $pinjam_chart ?>;
+
+/* ================= FIX DATA ================= */
+userData = userData.map(v => Number(v || 0));
+pinjamData = pinjamData.map(v => Number(v || 0));
+
+/* ================= USER CHART ================= */
+Highcharts.chart('userChart', {
+    chart: {
+        type: 'column',
+        backgroundColor: '#ffffff',
+        options3d: {
+            enabled: true,
+            alpha: 20,
+            beta: 20,
+            depth: 80,
+            viewDistance: 25
+        }
+    },
+    title: { text: '' },
+
+    xAxis: {
+        categories: bulan,
+        crosshair: true
+    },
+
+    yAxis: {
+        min: 0,
+        title: { text: '' }
+    },
+
+    plotOptions: {
+        column: {
+            depth: 40,
+            borderRadius: 6,
+            colorByPoint: true
+        }
+    },
+
+    colors: ['#4f46e5','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#14b8a6'],
+
+    series: [{
+        name: 'User',
+        data: userData
+    }],
+
+    credits: { enabled: false }
+});
+
+
+/* ================= PEMINJAMAN CHART ================= */
+Highcharts.chart('pinjamChart', {
+    chart: {
+        type: 'column',
+        backgroundColor: '#ffffff',
+        options3d: {
+            enabled: true,
+            alpha: 20,
+            beta: 20,
+            depth: 80,
+            viewDistance: 25
+        }
+    },
+    title: { text: '' },
+
+    xAxis: {
+        categories: bulan,
+        crosshair: true
+    },
+
+    yAxis: {
+        min: 0,
+        title: { text: '' }
+    },
+
+    plotOptions: {
+        column: {
+            depth: 40,
+            borderRadius: 6,
+            colorByPoint: true
+        }
+    },
+
+    colors: ['#22c55e','#16a34a','#84cc16','#f97316','#ef4444','#0ea5e9','#6366f1'],
+
+    series: [{
+        name: 'Peminjaman',
+        data: pinjamData
+    }],
+
+    credits: { enabled: false }
+});
+
+</script>
 
 </body>
 </html>

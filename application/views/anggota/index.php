@@ -4,10 +4,7 @@
     <title>Kelola Anggota</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Icon -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
@@ -60,12 +57,10 @@
     <h5 class="fw-bold">Kelola Anggota</h5>
 
     <div class="d-flex gap-2">
-          <!-- BACK KE DASHBOARD ADMIN -->
         <a href="<?= site_url('dashboard/admin') ?>" class="btn btn-secondary btn-modern">
             <i class="bi bi-arrow-left"></i> Dashboard
         </a>
 
-        <!-- Tombol Tambah -->
         <a href="<?= site_url('anggota/tambah') ?>" class="btn btn-dark btn-modern">
             + Tambah
         </a>
@@ -104,16 +99,16 @@
 
 <thead class="text-muted">
 <tr>
-<th>No</th>
-<th>Username</th>
-<th>Kelas</th>
-<th>Jurusan</th>
-<th>Status</th>
-<th>Aksi</th>
+    <th>No</th>
+    <th>Username</th>
+    <th>Kelas</th>
+    <th>Jurusan</th>
+    <th>Status</th>
+    <th>Aksi</th>
 </tr>
 </thead>
 
-<tbody id="tableBody">
+<tbody>
 
 <?php $no=1; foreach($anggota as $a): 
 $status = isset($a->status) ? $a->status : 'aktif';
@@ -125,41 +120,53 @@ $status = isset($a->status) ? $a->status : 'aktif';
     data-kelas="<?= $a->kelas ?>">
 
 <td><?= $no++ ?></td>
+
 <td class="fw-semibold"><?= $a->username ?></td>
-<td><?= $a->kelas ?? '-' ?></td>
-<td><?= $a->jurusan ?? '-' ?></td>
+<td><?= $a->kelas ?></td>
+<td><?= $a->jurusan ?></td>
 
 <td>
 <?php if($status=='aktif'): ?>
-<span class="badge-soft-success">Aktif</span>
+    <span class="badge-soft-success">Aktif</span>
 <?php else: ?>
-<span class="badge-soft-danger">Blacklist</span>
+    <span class="badge-soft-danger">Blacklist</span>
 <?php endif; ?>
 </td>
 
-<td>
+<td class="d-flex gap-1">
+
+<!-- EDIT -->
 <a href="<?= site_url('anggota/edit/'.$a->id) ?>" 
-class="btn btn-outline-dark btn-sm btn-modern">
-<i class="bi bi-pencil"></i>
+   class="btn btn-outline-dark btn-sm btn-modern">
+   <i class="bi bi-pencil"></i>
 </a>
 
+<!-- HAPUS -->
 <a href="<?= site_url('anggota/hapus/'.$a->id) ?>" 
-class="btn btn-outline-dark btn-sm btn-modern"
-onclick="return confirm('Yakin hapus?')">
-<i class="bi bi-trash"></i>
+   class="btn btn-outline-dark btn-sm btn-modern"
+   onclick="return confirm('Yakin hapus?')">
+   <i class="bi bi-trash"></i>
 </a>
 
+<!-- STATUS -->
 <?php if($status=='aktif'): ?>
 <a href="<?= site_url('anggota/blacklist/'.$a->id) ?>" 
-class="btn btn-outline-dark btn-sm btn-modern">
-<i class="bi bi-x-circle"></i>
+   class="btn btn-outline-dark btn-sm btn-modern">
+   <i class="bi bi-x-circle"></i>
 </a>
 <?php else: ?>
 <a href="<?= site_url('anggota/aktif/'.$a->id) ?>" 
-class="btn btn-outline-dark btn-sm btn-modern">
-<i class="bi bi-check-circle"></i>
+   class="btn btn-outline-dark btn-sm btn-modern">
+   <i class="bi bi-check-circle"></i>
 </a>
 <?php endif; ?>
+
+<!-- 🔥 CETAK KARTU (FIX UTAMA) -->
+<a href="<?= site_url('dashboard/cetak_kartu/'.$a->id) ?>" 
+   class="btn btn-primary btn-sm btn-modern">
+   <i class="bi bi-printer"></i>
+</a>
+
 </td>
 
 </tr>
@@ -173,7 +180,7 @@ class="btn btn-outline-dark btn-sm btn-modern">
 </div>
 </div>
 
-<!-- SCRIPT FILTER -->
+<!-- FILTER SCRIPT -->
 <script>
 const search = document.getElementById('search');
 const status = document.getElementById('filterStatus');

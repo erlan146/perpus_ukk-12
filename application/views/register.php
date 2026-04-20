@@ -1,116 +1,153 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Daftar</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register</title>
 
-  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
     body {
-      background: #f6f7f9;
+      background: linear-gradient(135deg, #e9f0ff, #f8f9fa);
       height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .register-card {
-      width: 380px;
-      border-radius: 16px;
+    .card-form {
+      width: 420px;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      border: none;
       padding: 25px;
       background: #fff;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      animation: fadeIn 0.4s ease;
     }
 
-    .form-control,
-    .form-select {
+    .title {
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .form-control, .form-select {
       border-radius: 10px;
       padding: 10px;
-      font-size: 14px;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-      box-shadow: none;
-      border-color: #333;
     }
 
     .btn-dark {
       border-radius: 10px;
       padding: 10px;
+    }
+
+    /* SUCCESS FULL SCREEN */
+    .success-wrapper{
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeBg 0.5s ease-in-out;
+    }
+
+    .success-card{
+      width: 360px;
+      background: #fff;
+      padding: 30px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+      animation: pop 0.4s ease;
+    }
+
+    .success-card .icon{
+      font-size: 55px;
+      margin-bottom: 10px;
+    }
+
+    .success-card h3{
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .success-card p{
+      color: #555;
       font-size: 14px;
     }
 
-    .title {
-      font-weight: 600;
+    @keyframes pop{
+      from{transform: scale(0.8); opacity: 0;}
+      to{transform: scale(1); opacity: 1;}
     }
 
-    .link {
-      font-size: 13px;
+    @keyframes fadeBg{
+      from{opacity: 0;}
+      to{opacity: 1;}
     }
 
-    @keyframes fadeIn {
-      from {opacity:0; transform: translateY(10px);}
-      to {opacity:1; transform: translateY(0);}
-    }
   </style>
 </head>
 
-<body class="d-flex align-items-center justify-content-center">
+<body>
 
-<div class="register-card">
+<?php if ($this->session->flashdata('success')) : ?>
 
-  <h5 class="text-center mb-3 title">Daftar Akun</h5>
+  <!-- SUCCESS PAGE -->
+  <div class="success-wrapper">
+    <div class="success-card">
 
-  <form method="post" action="<?= site_url('auth/register') ?>">
+      <div class="icon">🎉</div>
 
-    <!-- Username -->
-    <div class="mb-3">
-      <input name="username" class="form-control" placeholder="Username" required>
+      <h3>Berhasil!</h3>
+
+      <p><?= $this->session->flashdata('success'); ?></p>
+
+      <a href="<?= site_url('auth/login') ?>" class="btn btn-dark w-100 mt-3">
+        Lanjut ke Login
+      </a>
+
     </div>
+  </div>
 
-    <!-- Password -->
-    <div class="mb-3">
-      <input type="password" name="password" class="form-control" placeholder="Password" required>
-    </div>
+<?php else : ?>
 
-    <!-- Kelas -->
-    <div class="mb-3">
-      <select name="kelas" class="form-select" required>
-        <option value="">Pilih Kelas</option>
-        <option value="10">Kelas 10</option>
-        <option value="11">Kelas 11</option>
-        <option value="12">Kelas 12</option>
+  <!-- REGISTER FORM -->
+  <div class="card card-form">
+
+    <h4 class="title">Daftar Akun</h4>
+
+    <form method="post" action="<?= site_url('auth/proses_register') ?>">
+
+      <input name="username" class="form-control mb-3" placeholder="Username" required>
+
+      <input type="password" name="password" class="form-control mb-3" placeholder="Password" required>
+
+      <select name="kelas" class="form-select mb-3" required>
+        <option value="">-- Pilih Kelas --</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
       </select>
-    </div>
 
-    <!-- Jurusan -->
-    <div class="mb-3">
-      <select name="jurusan" class="form-select" required>
-        <option value="">Pilih Jurusan</option>
+      <select name="jurusan" class="form-select mb-3" required>
+        <option value="">-- Pilih Jurusan --</option>
         <option value="PPLG">PPLG</option>
-        <option value="TJKT">TJKT</option>
         <option value="AKL">AKL</option>
+        <option value="TJKT">TJKT</option>
         <option value="MPLB">MPLB</option>
       </select>
-    </div>
 
-    <!-- Button -->
-    <button type="submit" class="btn btn-dark w-100">
-      Daftar
-    </button>
+      <button class="btn btn-dark w-100">Daftar</button>
 
-  </form>
+    </form>
 
-  <p class="text-center mt-3 mb-0 link">
-    Sudah punya akun? 
-    <a href="<?= site_url('auth') ?>" class="fw-semibold text-dark">
-      Login
-    </a>
-  </p>
+  </div>
 
-</div>
+<?php endif; ?>
 
 </body>
 </html>
